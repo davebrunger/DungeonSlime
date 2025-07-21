@@ -3,7 +3,6 @@ namespace DungeonSlime.Scenes;
 public class GameScene : Scene
 {
     private const float MOVEMENT_SPEED = 5;
-    private const float ONE_OVER_ROOT_TWO = 0.70710678118f; // 1 / sqrt(2)
 
     private AnimatedSprite slime = null!;
     private Vector2 slimePosition = Vector2.Zero;
@@ -61,7 +60,7 @@ public class GameScene : Scene
         );
 
         batPosition = new Vector2(roomBounds.Left, roomBounds.Top);
-        batVelocity = GetRandomUnitVector() * MOVEMENT_SPEED;
+        batVelocity = MathUtilities.GetRandomUnitVector() * MOVEMENT_SPEED;
 
         score = 0;
         // Centre Score vertically in tile
@@ -96,7 +95,7 @@ public class GameScene : Scene
         if (slime.GetBoundingCircle(slimePosition).Intersects(bat.GetBoundingCircle(batPosition)))
         {
             batPosition = GetRandomPosition(tileMap, bat);
-            batVelocity = GetRandomUnitVector() * MOVEMENT_SPEED;
+            batVelocity = MathUtilities.GetRandomUnitVector() * MOVEMENT_SPEED;
             Audio.PlaySoundEffect(collect);
             score += 100;
         }
@@ -131,48 +130,6 @@ public class GameScene : Scene
     private float GetSpeedFromKeys()
     {
         return Input.KeyboardInfo.IsKeyDown(Keys.Space) ? 2f : 1f;
-    }
-
-    private Vector2 GetDirectionFromKeys()
-    {
-        var direction = Vector2.Zero;
-
-        if (Input.KeyboardInfo.IsKeyDown(Keys.W) || Input.KeyboardInfo.IsKeyDown(Keys.Up))
-        {
-            direction.Y -= 1;
-        }
-
-        if (Input.KeyboardInfo.IsKeyDown(Keys.S) || Input.KeyboardInfo.IsKeyDown(Keys.Down))
-        {
-            direction.Y += 1;
-        }
-
-        if (Input.KeyboardInfo.IsKeyDown(Keys.A) || Input.KeyboardInfo.IsKeyDown(Keys.Left))
-        {
-            direction.X -= 1;
-        }
-
-        if (Input.KeyboardInfo.IsKeyDown(Keys.D) || Input.KeyboardInfo.IsKeyDown(Keys.Right))
-        {
-            direction.X += 1;
-        }
-
-        return direction.X == 0 || direction.Y == 0
-            ? new Vector2(direction.X, direction.Y)
-            : new Vector2(direction.X * ONE_OVER_ROOT_TWO, direction.Y * ONE_OVER_ROOT_TWO);
-    }
-
-    private static Vector2 GetRandomUnitVector()
-    {
-        float angle = (float)(Random.Shared.NextDouble() * Math.PI * 2);
-        return ToUnitVector(angle);
-    }
-
-    private static Vector2 ToUnitVector(float angleInRadians)
-    {
-        float x = (float)Math.Cos(angleInRadians);
-        float y = (float)Math.Sin(angleInRadians);
-        return new Vector2(x, y);
     }
 
     private static Vector2 GetRandomPosition(TileMap tileMap, Sprite sprite)
